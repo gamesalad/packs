@@ -2,13 +2,23 @@ require 'sinatra'
 require 'sinatra/reloader' if development?
 require 'RMagick'
 require 'digest/md5'
-
+require 'base64'
 
 include Magick
 
 class PackImg < Sinatra::Base
 
+  enable :logging
+
+  def leech_check
+    if !request.referrer.nil? && !request.referrer.empty? && request.referrer !~ /gamesalad\.com|gsrca\.de/
+      logger.info "We have a leach: '#{request.referrer}'"
+    end
+  end
+
   get '/thumb/:resize/:format/:source' do
+
+    leech_check
 
     return "" unless params[:source]
 
@@ -35,12 +45,14 @@ class PackImg < Sinatra::Base
   end
 
   get '/' do
-    
+
+    leech_check
+
     return "" unless params[:source]
-  
+
     etag Digest::MD5.hexdigest("#{params[:source]}:#{params[:resize]}:#{params[:flip]}:#{params[:rotate]}:#{params[:format]}:#{params[:quality]}:#{params[:version]}")
     img = Image.read(params[:source]).first
-    
+
     ops = []
     ops << ->(image) { image }
     ops << ->(image) { image.resize_to_fit(*params[:resize].split('x'))} if params[:resize]

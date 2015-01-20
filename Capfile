@@ -3,7 +3,7 @@ $:.unshift(File.expand_path('./lib', ENV['rvm_path']))
 # Load RVM's capistrano plugin.
 require "rvm/capistrano"
 # Set it to the ruby + gemset of your app, e.g:
-set :rvm_ruby_string, '1.9.2@pack'
+set :rvm_ruby_string, 'ruby-2.1.5@pack'
 
 load 'deploy' if respond_to?(:namespace) # cap2 differentiator
 Dir['vendor/gems/*/recipes/*.rb','vendor/plugins/*/recipes/*.rb'].each { |plugin| load(plugin) }
